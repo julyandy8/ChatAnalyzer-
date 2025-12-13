@@ -1,258 +1,277 @@
-# ChatAnalyzer-
-📊 ChatAnalyzer – Cross-Platform Chat Analytics (C++17)
+# 📊 ChatAnalyzer – Cross-Platform Chat Analytics (C++17)
 
-ChatAnalyzer is a standalone Windows application written entirely in modern C++17 that performs deep analysis of exported chat histories from major messaging platforms.
-It transforms raw message archives into a unified internal format, computes rich conversation statistics, and renders interactive charts and summaries inside a custom-built Win32 GUI.
+ChatAnalyzer is a standalone Windows application written in modern C++17 that analyzes exported conversations from **Instagram**, **WhatsApp**, and **Discord**.  
+It converts chat exports into a unified format, computes detailed conversation metrics, and provides non-interactive visual charts — all in a fast(?), self-contained Windows application.
 
-The project is self-contained, has no runtime dependencies, and ships with its own parsers, sentiment engines, and visualization code.
+---
 
-🚀 Supported Export Formats
+## 📈 What Insights Does ChatAnalyzer Provide?
+---
+## **Message Statistics & Conversation Dynamics**
+- Total messages sent  
+- Per-user activity  
+- Longest messages (smartly abbreviated preview)  
+- Average message length  
+- Most frequently used words (noise filtered out)  
+- Double-text & triple-text patterns  
+- Average response time between messages  
+- Distribution of fast replies (<1 min, <5 min, <30 min, etc.)  
+- Monthly activity trends for each user
+## ** Sentiment Analysis Results **
+- Per-message **VADER polarity scores**  
+- Monthly emotional intensity (with negative clamping for readability)  
+- NRC emotion categories with top contributing words
+## ** Behavioral & Temporal Trends**
+- Hour-by-weekday message heatmap  
+- Monthly message volume  
+- Monthly average message length  
+- Monthly romantic-phrase frequency  
+- Multi-user comparative line graphs  
 
-ChatAnalyzer currently supports:
+---
+---
+### **Sentiment Analysis**
+ChatAnalyzer uses two independent, research-backed lexicons:
+**VADER's Sentiment analysis** is the process of evaluating text to determine its emotional tone — positive, negative, or neutral.
+**NRC's Emotion analysis goes** deeper by categorizing text into discrete emotional states like joy, anger, fear, trust, and more.
 
-Instagram (native JSON export)
+### 🔹 VADER Sentiment Analysis  
+A rule-based sentiment model optimized for **social media language** and short conversational text.  
+It generates:
 
-Parses the standard Meta JSON structure used for direct messages.
+- Positive score  
+- Negative score  
+- Neutral score  
+- A **compound** score (overall emotional intensity)
 
-Discord (Discrub export → converter)
+**VADER is ideal for:** slang, emojis, emphasis, exaggeration, short chat messages.
 
-A custom converter transforms Discrub’s export folder into an Instagram-style JSON dataset, allowing Discord chats to be analyzed using the same logic pipeline.
+📖 Official VADER Paper:  
+https://github.com/cjhutto/vaderSentiment
 
-WhatsApp (_chat.txt export → converter)
+### 🔹 NRC Emotion Lexicon  
+A curated dataset mapping thousands of English words to **eight core emotions**:
 
-WhatsApp’s plaintext export is parsed and normalized into the same internal JSON format, including:
+- Joy  
+- Sadness  
+- Anger  
+- Fear  
+- Trust  
+- Disgust  
+- Surprise  
+- Anticipation  
 
-Timestamp parsing (12-hour with AM/PM)
+Plus two broader sentiments: **Positive** and **Negative**.
 
-Unicode cleanup (LTR marks, special spacing)
+**NRC excels at:** fine-grained emotional classification and long-term emotional trend analysis.
 
-Multi-line message joining
+📖 NRC Lexicon Page:  
+https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
 
-System message filtering (media omitted, calls, deleted messages, encryption notices)
+---
 
-All platforms ultimately map into a unified structure:
+## ✅ How to Download & Run
 
+1. Download the latest **ChatAnalyzer.zip** from the GitHub **Releases** section.  
+2. Extract the folder anywhere.  
+3. Make sure these files stay together: ChatAnalyzer.exe, vader_lexicon.txt, nrc_emotion_lexicon.txt
+4. Run `ChatAnalyzer.exe`.  
+5. Export your chat from Instagram / WhatsApp / Discord and load it into the app.
+---
+
+## 🚀 Supported Export Formats
+
+### **Instagram (JSON export)**
+Parses Meta’s DM export, including:
+- Participants  
+- Message bodies  
+- Reactions  
+- Timestamps  
+
+### **Discord (Discrub export → converter)**
+A converter transforms Discrub’s exported folder into the unified JSON schema.  
+Handles:
+- Timestamp normalization  
+- Sender mapping  
+- Multi-line reconstruction  
+- JSON output compatible with the analytics engine  
+
+### **WhatsApp (`_chat.txt` export → converter)**
+The plaintext export is normalized into the unified schema with:
+- 12-hour timestamps (AM/PM)
+- Unicode cleanup (LTR marks, bidi characters, smart quotes)
+- Multi-line message joining
+- Sender extraction
+- System-message filtering
+
+---
+
+## 🧱 Unified Data Structure
+
+All platforms map into the following JSON format:
+
+```json
 {
-  "participants": [...],
+  "participants": [{ "name": "User1" }, { "name": "User2" }],
   "messages": [
     {
-      "sender_name": "...",
+      "sender_name": "User1",
       "timestamp_ms": 1510117204000,
-      "content": "...",
-      "is_geoblocked_for_viewer": false,
-      "is_unsent_image_by_messenger_kid_parent": false
+      "content": "Hello!"
     }
   ],
-  "title": "...",
-  "thread_path": "...",
+  "title": "Chat Title",
+  "thread_path": "converted",
   "is_still_participant": true
 }
+```
+
+## Stop words
+The following words won't be counted towards for the 'top 10 words' statistic as they add too many useless words. Feel free to edit it in the Count_messages.cpp:
+```json
+  "a","about","after","again","against","all","also","am","an","and","any",
+    "are","as","at","be","because","been","before","being","below","between",
+    "both","but","by","can","come","could","did","do","does","doing","down",
+    "during","each","even","ever","every","few","for","from","further","get",
+    "go","goes","got","had","has","have","having","he","her","here","hers",
+    "herself","him","himself","his","how","i","if","in","into","is","it",
+    "its","itself","just","know","let","like","made","make","makes","many",
+    "may","me","might","more","most","much","must","my","myself","new","no",
+    "nor","not","now","of","off","on","once","one","only","or","other","our",
+    "ours","ourselves","out","over","own","perhaps","put","said","same",
+    "say","says","see","seen","she","should","since","so","some","still",
+    "such","take","taken","than","that","the","their","theirs","them",
+    "themselves","then","there","these","they","thing","things","think",
+    "this","those","through","to","too","under","until","up","use","used",
+    "using","very","want","was","we","well","were","what","when","where",
+    "which","while","who","whom","why","will","with","within","without",
+    "would","yeah","yep","yes","yet","you","your","yours","yourself",
+    "yourselves",
+
+    // Chat-specific fillers, reactions, and low-information words
+    "alright","anyway","aww","bc","bet","brb","bro","bruh","btw","cool","cuz",
+    "dude","eh","fine","gonna","hah","haha","hahaha","hehe","hey","hi",
+    "hmm","idc","idk","idek","im","jk","k","kk","lmao","lmfao","lol","loll",
+    "lolol","man","maybe","nah","nice","now","ok","okay","omg","oof","oop",
+    "pls","plz","pretty","prob","probably","really","right","rn","sure",
+    "thanks","thank","thx","true","uh","uhh","ugh","um","well","whoa",
+    "wow","wtf","yall","yup","ur",
+
+    // Export noise (to avoid polluting analytics)
+    "attachment","attachments","message","messages","reacted","sent","still"
+```
+## Romantic Phrases
+The following words are counted towards the romantic phrases stat. Feel free to edit it in the Count_messages.cpp as it's impossible to generalize romance for every chat. Careful that you don't include any phrases that are already included by others. For Example "Love you" and "I Love you" would take the message "Hey, I think I love you alot." and increment the counter by 2. 
+```json
+// affection / love
+    "love you",
+    "love u",
+    "miss you",
+    "miss u",
+    // too many false positives "want you",
+    // too many false positives "need you",
+    "crave you",
+    "adore you",
+    "care about you",
+    "thinking of you",
+    "thinking about you",
+
+    // attraction / desire
+    "want you so bad",
+    "want you bad",
+    "need you bad",
+    "craving you",
+    "dying for you",
+    "hungry for you",
+    "thirsty for you",
+    "obsessed with you",
+    "crazy about you",
+    "mad about you",
+    "hooked on you",
+
+    // touching / closeness
+    "miss your touch",
+    "love your touch",
+    "love your body",
+    "miss your body",
+    "want your body",
+    "need your body",
+    "love your kisses",
+    "love your kiss",
+    "miss your kiss",
+    "love your hugs",
+    "miss your hugs",
+
+    // emotional intimacy
+    "you mean so much",
+    "you mean everything",
+    "my love",
+    "my heart",
+    "my world",
+    "my everything",
+    "my person",
+    "my soulmate",
+    "my favorite person",
+    "my whole world",
+
+    // closeness / belonging
+    "feel safe with you",
+    "safe with you",
+    "home with you",
+    "you feel like home",
+    "belong with you",
+    "belong to you",
+    "meant for you",
+    "meant for us",
+    "meant to be",
+
+    // affectionate nicknames / pet names
+    "babe",
+    "baby",
+    "sweetheart",
+    "sweetie",
+    "cutie",
+    "beautiful",
+    "gorgeous",
+    "handsome",
+    "sexy",
+    "darling",
+    "honey",
+    // longing / distance
+    "wish you were here",
+    "wish u were here",
+    "want you here",
+    "need you here",
+    "miss being with you",
+    "miss time with you",
+    "miss your voice",
+    "miss your smile",
+    "miss your face",
+
+    // passion / sexual energy
+    "turn me on",
+    "hot for you",
+    "want you naked",
+    "want your lips",
+    "love your lips",
+    "love your neck",
+    "love your skin",
+    "need your touch",
+
+    // flirting / teasing
+    "cant resist you",
+    "you tempt me",
+    "you tease me",
+    "you make me weak",
+    "you make me melt",
+    "you melt me",
+    "you ruin me",
+    "you own me",
+
+    // commitment / emotional weight
+    "you complete me",
+    "we belong together",
+```
 
 
-This lets the entire analytics pipeline operate identically across sources.
 
-🧠 Core Features & Analytics
-Message Statistics
-
-Total messages
-
-Per-user message counts
-
-Double-text / triple-text sequences
-
-Longest messages (with smart truncation)
-
-Average / median message length
-
-Word frequency (with noise filtering: media omitted, calls, deleted messages, etc.)
-
-Conversation Dynamics
-
-Response-time estimation using timestamp deltas
-
-Distribution of replies under different time thresholds
-
-Per-user monthly averages
-
-Sentiment Analysis
-
-ChatAnalyzer includes two independent sentiment engines, implemented from scratch:
-
-VADER Sentiment (compound score)
-
-Uses vader_lexicon.txt
-
-Computes per-message compound polarity
-
-Aggregated into monthly emotional intensity per user
-
-Graph automatically clamps negative values at zero for readability
-
-NRC Emotion Lexicon
-
-Joy, Sadness, Anger, Fear, Trust, Anticipation, Disgust, Surprise
-
-Positive vs. Negative categories
-
-Top contributing words displayed after each category
-
-Behavioral Trends
-
-Hour-vs-Weekday heatmap
-
-Monthly message volume
-
-Monthly average message length
-
-Monthly romantic-phrase detection
-
-Per-user timeline graphing with color-coded legend
-
-Full Visualization Layer
-
-A custom Win32 rendering canvas (not third-party UI) draws:
-
-Multi-line graphs
-
-Axis scaling
-
-Dynamic color palettes
-
-Scrollable chart surface
-
-Label placement and collision avoidance
-
-Custom heatmap renderer
-
-All charts update automatically after each analysis pass.
-
-🏗️ Internal Architecture
-1. Data Conversion Layer
-
-discord_convert.cpp
-
-whatsapp_convert.cpp
-
-Both convert platform-specific exports into normalized Instagram-style message files.
-Raw string parsing, timestamp handling, Unicode cleanup, line continuation, and system message filtering occur here.
-
-2. Analytics Engine (Count_Messages.cpp)
-
-This is the heart of the project. It handles:
-
-Time-indexing messages
-
-Aggregating by month / weekday / hour
-
-Per-user breakdowns
-
-Sentiment scoring
-
-Word counting
-
-Response timing
-
-Romantic keyword detection
-
-Building global + per-user datasets used by the GUI
-
-All analytics output is stored in global vectors such as:
-
-g_monthlyCountPoints
-g_userMonthlyEmotionSeries
-g_heatmapCounts[7][24]
-...
-
-
-These are consumed by the GUI’s visual layer.
-
-3. Sentiment Modules
-
-vader_sentiment.cpp/.hpp
-
-nrc_emotion.cpp/.hpp
-
-Both lexicons are loaded from the executable’s directory:
-
-vader_lexicon.txt
-nrc_emotion_lexicon.txt
-
-
-Each message is tokenized, normalized, and scored according to its lexicon.
-
-4. GUI Layer (gui_main.cpp)
-
-A fully custom Win32 window:
-
-Tab controls (Summary / Visuals)
-
-Styled RichEdit output with color-coded text sections
-
-A drawing canvas for interactive charts
-
-File pickers & folder pickers
-
-Platform conversion buttons (Discord / WhatsApp)
-
-Background analysis threads
-
-Smooth scrolling chart viewport
-
-Layout engine for buttons, tabs, and dynamic resizing
-
-All GUI code avoids external frameworks to keep the build minimal.
-
-🔧 Building From Source
-
-Requires:
-
-GCC / MinGW-w64
-
-C++17 support
-
-Build command:
-
-g++ -std=c++17 gui_main.cpp Count_Messages.cpp vader_sentiment.cpp nrc_emotion.cpp discord_convert.cpp whatsapp_convert.cpp -o ChatAnalyzer.exe -municode -mwindows -lcomdlg32 -lole32 -lcomctl32
-
-
-Produces a single portable ChatAnalyzer.exe with no dependencies.
-
-Your resulting folders should look something like this ideally:
-ChatAnalyzer(Application)
-Count_Messages(C++)
-discord_convert(C++)
-gui_main(c++)
-json.hpp(c++)
-nrc_emotion(c++)
-nrc_emotion.hpp(C++)
-nrc_emotion_lexicon(Text file)
-vader_lexicon(text file)
-vader_sentiment(C++)
-vader_sentiment.hpp(c++)
-whatsapp_convert(C++)
-
-Note: The lexicons must be in the same folder as the Application.
-End users do not need a compiler or libraries.
-They only need to provide their exported chat data.
-
-🔮 Future Improvements
-
-More platform converters (iMessage, Telegram, Messenger)
-Exportable graphs (PNG, SVG)
-Embed fonts and themes
-Add a plugin-based analytics system
-Abstract the GUI layer for cross-platform builds
-
-📝 License & Attribution
-
-VADER lexicon: MIT Licensed — original source by C.J. Hutto
-
-NRC Emotion Lexicon: Research dataset by Saif Mohammad & Peter Turney
-
-JSON parsing: json.hpp by nlohmann (MIT)
-
-ChatAnalyzer’s C++ source code is licensed under MIT unless otherwise specified.
-
-❤️ Contributing
-
-Pull requests are welcome — improvements to converters, visualization, sentiment algorithms, or UX are all great places to start.
