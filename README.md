@@ -1,41 +1,60 @@
 # 📊 ChatAnalyzer – Cross-Platform Chat Analytics (C++17)
 
-ChatAnalyzer is a standalone Windows application written in modern C++17 that analyzes exported conversations from **Instagram**, **WhatsApp**, and **Discord**.  
+ChatAnalyzer is a standalone Windows application written in modern C++17 that analyzes exported conversations exported chat histories from multiple messaging platforms and presents detailed statistics, sentiment analysis, and visual timelines — all without requiring any technical setup
 It converts chat exports into a unified format, computes detailed conversation metrics, and provides non-interactive visual charts — all in a fast(?), self-contained Windows application.
 
 ---
 
-## 📈 What Insights Does ChatAnalyzer Provide?
----
-## **Message Statistics & Conversation Dynamics**
+# 🚀 Quick Start 
+1. Download the files from the **Releases** section or the `dist/` folder:
+   - `ChatAnalyzer.exe`
+   - `nrc_emotion_lexicon.txt`
+   - `vader_lexicon.txt`
+2. Place all files in the **same folder**
+3. Double-click `ChatAnalyzer.exe`
+4. Use the buttons at the top to import or convert your chat data
+5. Click **Run Analysis**
+
+That’s it. Depending on what platform your initial chats are on - you'll have to a) ask the platform for the data b) use one of the tools listed to get the data or c) for Imsg and Android -->get ur unencrypted backups and convert them using the tool.
+
+# 💬 Supported Platforms
+Currently supports analysis of exported conversations from:
+- **Instagram** (Meta data export, JSON)
+- **WhatsApp** (exported `_chat.txt`)
+- **Discord** (JSON exports via tools such as Discrub)
+- **Android SMS** (SMS Backup & Restore XML)
+- **iMessage** (iOS backups or direct `chat.db`)
+
+All formats are converted into a unified internal structure before analysis.
+## 🧮 Message Statistics
 - Total messages sent  
 - Per-user activity  
 - Longest messages (smartly abbreviated preview)  
 - Average message length  
 - Most frequently used words (noise filtered out)  
 - Double-text & triple-text patterns  
-- Average response time between messages  
+## ⏱ Conversation Dynamics
+- Average response time between users
 - Distribution of fast replies (<1 min, <5 min, <30 min, etc.)  
-- Monthly activity trends for each user
-## ** Sentiment Analysis Results **
-- Per-message **VADER polarity scores**  
-- Monthly emotional intensity (with negative clamping for readability)  
-- NRC emotion categories with top contributing words
-## ** Behavioral & Temporal Trends**
+- Monthly average response times per user
+## ❤️ Romantic / Expressive Metrics
+- Detection of romantic or affectionate messages
+- Monthly romantic message counts
+- Per-user romantic message trends
+## Behavioral Trends
 - Hour-by-weekday message heatmap  
 - Monthly message volume  
-- Monthly average message length  
-- Monthly romantic-phrase frequency  
+- Monthly average message length   
 - Multi-user comparative line graphs  
+----
 
----
----
-### **Sentiment Analysis**
+
+# Sentiment Analysis
 ChatAnalyzer uses two independent, research-backed lexicons:
 **VADER's Sentiment analysis** is the process of evaluating text to determine its emotional tone — positive, negative, or neutral.
 **NRC's Emotion analysis goes** deeper by categorizing text into discrete emotional states like joy, anger, fear, trust, and more.
 
-### 🔹 VADER Sentiment Analysis  
+## 🔹 VADER Sentiment Analysis  
 A rule-based sentiment model optimized for **social media language** and short conversational text.  
 It generates:
 
@@ -49,7 +68,7 @@ It generates:
 📖 Official VADER Paper:  
 https://github.com/cjhutto/vaderSentiment
 
-### 🔹 NRC Emotion Lexicon  
+## 🔹 NRC Emotion Lexicon  
 A curated dataset mapping thousands of English words to **eight core emotions**:
 
 - Joy  
@@ -62,7 +81,7 @@ A curated dataset mapping thousands of English words to **eight core emotions**:
 - Anticipation  
 
 Plus two broader sentiments: **Positive** and **Negative**.
-
+Results are aggregated per user and displayed in a clear, readable format.
 **NRC excels at:** fine-grained emotional classification and long-term emotional trend analysis.
 
 📖 NRC Lexicon Page:  
@@ -70,25 +89,8 @@ https://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm
 
 ---
 
-## ✅ How to Download & Run
-
-1. Download the latest **ChatAnalyzer.zip** from the GitHub **Releases** section.  
-2. Extract the folder anywhere.  
-3. Make sure these files stay together: ChatAnalyzer.exe, vader_lexicon.txt, nrc_emotion_lexicon.txt
-4. Run `ChatAnalyzer.exe`.  
-5. Export your chat from Instagram / WhatsApp / Discord and load it into the app.
----
-
-## 🚀 Supported Export Formats
-
-### **Instagram (JSON export)**
-Parses Meta’s DM export, including:
-- Participants  
-- Message bodies  
-- Reactions  
-- Timestamps  
-
-### **Discord (Discrub export → converter)**
+# Examples of Conversion Techniques
+## *Discord (Discrub export → converter)*
 A converter transforms Discrub’s exported folder into the unified JSON schema.  
 Handles:
 - Timestamp normalization  
@@ -96,7 +98,7 @@ Handles:
 - Multi-line reconstruction  
 - JSON output compatible with the analytics engine  
 
-### **WhatsApp (`_chat.txt` export → converter)**
+## **WhatsApp (`_chat.txt` export → converter)**
 The plaintext export is normalized into the unified schema with:
 - 12-hour timestamps (AM/PM)
 - Unicode cleanup (LTR marks, bidi characters, smart quotes)
@@ -106,7 +108,7 @@ The plaintext export is normalized into the unified schema with:
 
 ---
 
-## 🧱 Unified Data Structure
+# 🧱 Unified Data Structure
 
 All platforms map into the following JSON format:
 
@@ -125,9 +127,18 @@ All platforms map into the following JSON format:
   "is_still_participant": true
 }
 ```
+## 🛠 Technical Overview
 
-## Stop words
+- **Language:** C++17
+- **GUI:** Native Win32 API
+- **Data Storage:** SQLite (read-only)
+- **JSON Parsing:** nlohmann/json
+- **Sentiment Models:** VADER, NRC Emotion Lexicon
+- **Build Style:** Fully static, offline-capable executable
+
+### Stop words
 The following words won't be counted towards for the 'top 10 words' statistic as they add too many useless words. Feel free to edit it in the Count_messages.cpp:
+It's basically the top 100 most used words in english + filler words. 
 ```json
   "a","about","after","again","against","all","also","am","an","and","any",
     "are","as","at","be","because","been","before","being","below","between",
@@ -160,8 +171,8 @@ The following words won't be counted towards for the 'top 10 words' statistic as
     // Export noise (to avoid polluting analytics)
     "attachment","attachments","message","messages","reacted","sent","still"
 ```
-## Romantic Phrases
-The following words are counted towards the romantic phrases stat. Feel free to edit it in the Count_messages.cpp as it's impossible to generalize romance for every chat. Careful that you don't include any phrases that are already included by others. For Example "Love you" and "I Love you" would take the message "Hey, I think I love you alot." and increment the counter by 2. 
+### Romantic Phrases
+Below are SOME Examples of words which are counted towards the romantic phrases stat. Feel free to edit it in the Count_messages.cpp as it's impossible to generalize romance for every chat. Careful that you don't include any phrases that are already included by others. For Example "Love you" and "I Love you" would take the message "Hey, I think I love you alot." and increment the counter by 2. 
 ```json
 // affection / love
     "love you",
@@ -171,102 +182,27 @@ The following words are counted towards the romantic phrases stat. Feel free to 
     // too many false positives "want you",
     // too many false positives "need you",
     "crave you",
-    "adore you",
-    "care about you",
-    "thinking of you",
-    "thinking about you",
+ 
 
     // attraction / desire
     "want you so bad",
     "want you bad",
     "need you bad",
-    "craving you",
-    "dying for you",
-    "hungry for you",
-    "thirsty for you",
+    "craving you"
     "obsessed with you",
     "crazy about you",
-    "mad about you",
-    "hooked on you",
-
-    // touching / closeness
-    "miss your touch",
-    "love your touch",
-    "love your body",
-    "miss your body",
-    "want your body",
-    "need your body",
-    "love your kisses",
-    "love your kiss",
-    "miss your kiss",
-    "love your hugs",
-    "miss your hugs",
 
     // emotional intimacy
     "you mean so much",
     "you mean everything",
     "my love",
     "my heart",
-    "my world",
-    "my everything",
-    "my person",
-    "my soulmate",
-    "my favorite person",
-    "my whole world",
 
     // closeness / belonging
-    "feel safe with you",
-    "safe with you",
+    "feel safe with you"
     "home with you",
     "you feel like home",
-    "belong with you",
-    "belong to you",
-    "meant for you",
-    "meant for us",
-    "meant to be",
 
-    // affectionate nicknames / pet names
-    "babe",
-    "baby",
-    "sweetheart",
-    "sweetie",
-    "cutie",
-    "beautiful",
-    "gorgeous",
-    "handsome",
-    "sexy",
-    "darling",
-    "honey",
-    // longing / distance
-    "wish you were here",
-    "wish u were here",
-    "want you here",
-    "need you here",
-    "miss being with you",
-    "miss time with you",
-    "miss your voice",
-    "miss your smile",
-    "miss your face",
-
-    // passion / sexual energy
-    "turn me on",
-    "hot for you",
-    "want you naked",
-    "want your lips",
-    "love your lips",
-    "love your neck",
-    "love your skin",
-    "need your touch",
-
-    // flirting / teasing
-    "cant resist you",
-    "you tempt me",
-    "you tease me",
-    "you make me weak",
-    "you make me melt",
-    "you melt me",
-    "you ruin me",
-    "you own me",
 
     // commitment / emotional weight
     "you complete me",
