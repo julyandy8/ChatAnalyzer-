@@ -7,11 +7,10 @@ It converts chat exports into a unified format, computes detailed conversation m
 
 # 🚀 Quick Start 
 1. Download the files from the **Releases** section or the `dist/` folder:
-   - `ChatAnalyzer.exe`
-   - `nrc_emotion_lexicon.txt`
-   - `vader_lexicon.txt`
-2. Place all files in the **same folder**
-3. Double-click `ChatAnalyzer.exe`
+   - Install the Source code (zip), Unzip it on your computer and run the ChatAnalyzer.exe.
+   - Alternatively, manually install the ChatAnalyzer.exe and both lexicon.txt's and ensure they're in the same folder 
+2. Ensure all files are in the **same folder**
+3. Navigate to the dist folder and Double-click `ChatAnalyzer.exe`
 4. Use the buttons at the top to import or convert your chat data
 5. Click **Run Analysis**
 
