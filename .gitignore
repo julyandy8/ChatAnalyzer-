@@ -1,0 +1,15 @@
+# Build artifacts
+*.o
+*.obj
+*.exe
+
+# Temporary / OS junk
+.DS_Store
+Thumbs.db
+
+# IDE / editor files
+.vscode/
+.idea/
+
+# Logs
+*.log
