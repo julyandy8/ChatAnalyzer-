@@ -209,5 +209,9 @@ Below are SOME Examples of words which are counted towards the romantic phrases 
     "we belong together",
 ```
 
+Special Thanks to 
+- the NRC webpage & Vader github for providing the lexicons.
+- Reagentx for his imessage exporter on github giving the idea to look at unencrypted backups. https://github.com/reagentx/imessage-exporter
+
 
 
